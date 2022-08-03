@@ -1,24 +1,34 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const date = require(__dirname + "/date.js");
+const mongoose = require("mongoose");
 
 const app = express();
-const items = ["Buy Food", "Eat Lunch"];
-
-// Another array for route
-const workitems = ["Feed the Dogs"];
 
 app.set("view engine", "ejs");
 // use bodyparser for getting details of a form
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
+// Connecting to our mongoose server
+mongoose.connect("mongodb://localhost:27017/todoListDB");
+
+// Creaating a new Schema
+const itemSchema = {
+  name: String,
+};
+// create a model
+const Item = mongoose.model("Item", itemSchema);
+
+const items = new Item({
+  name: "I will wash plates",
+});
+
 app.get("/", (req, res) => {
   // A new date param
-  let day = date.getDay();
 
   res.render("list", {
-    listTitle: day,
+    listTitle: "Today",
     newListItems: items,
   });
 });
