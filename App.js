@@ -1,6 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const date = require(__dirname + "/date.js");
+
 const mongoose = require("mongoose");
 
 const app = express();
@@ -13,37 +13,57 @@ app.use(express.static("public"));
 // Connecting to our mongoose server
 mongoose.connect("mongodb://localhost:27017/todoListDB");
 
-// Creaating a new Schema
+// Creaating of  a new Schema
 const itemSchema = {
   name: String,
 };
 // create a model
 const Item = mongoose.model("Item", itemSchema);
 
-const items = new Item({
+const item1 = new Item({
   name: "I will wash plates",
 });
 
-app.get("/", (req, res) => {
-  // A new date param
+const item2 = new Item({
+  name: "I will feed the dogs",
+});
 
-  res.render("list", {
-    listTitle: "Today",
-    newListItems: items,
+const item3 = new Item({
+  name: "I will code for some hours",
+});
+const defaultArray = [item1, item2, item3];
+
+app.get("/", (req, res) => {
+  // find the items
+
+  Item.find({}, (err, foundItems) => {
+    if (foundItems.length === 0) {
+      // INsert into the db if There is no defaultArray
+      Item.insertMany(defaultArray, (err) => {
+        if (err) {
+          console.log("Wasn't Added");
+        } else {
+          console.log("Successfully Added");
+        }
+      });
+      res.redirect("/");
+    } else {
+      res.render("list", { listTitle: "Today", newListItems: foundItems });
+    }
   });
 });
-app.post("/", (req, res) => {
-  let item = req.body.newItem;
-  items.push(item);
 
-  if (req.body.list === "work") {
-    workitems.push(item);
-    res.redirect("/work");
-  } else {
-    items.push(item);
-    res.redirect("/");
-  }
-  //   runs the app.get again
+// render to list.ejs
+
+app.post("/", (req, res) => {
+  const newItemName = req.body.newItem;
+
+  // Creating a  new Schema so we can save to our mongodb
+  const item = new Item({
+    name: newItemName,
+  });
+  item.save();
+  res.redirect("/");
 });
 
 // Another route rendering
