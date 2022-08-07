@@ -79,6 +79,7 @@ app.get("/:customListName", (req, res) => {
         listTitle: foundList.name,
         newListItems: foundList.items,
       });
+      res.redirect("");
     }
   });
 });

@@ -1,7 +1,3 @@
-sets up a connection to mongodb database
-
-<hr/>
-
 ```sh
 
 
@@ -13,15 +9,19 @@ const app = express();
 
 This step allows us to use the different node modules, namely:
 express, bodyParser and mongoose.
+
 express: allows us use express in our node environment
+
 body-parser: allows us use bodyParser for submission of form
+
 mongoose: responsible for saving data to the database for later access
 
 ```
 
 ```sh
-Allows us to access ejs pages in our express app..
+
 app.set("view engine", "ejs");
+Allows us to access ejs pages in our express app..
 
 ```
 
@@ -36,10 +36,38 @@ and the next helps us access the static files like html, css and javascript
 ```sh
 mongoose.connect("mongodb://localhost:27017/todoListDB");
 
-Helps us to connect to our mongodb database
+sets up a connection to mongodb database
 ```
 
-<p>const itemSchema = {</p>
- <p> name: String,</p>
-<p>};</p>
+```sh
+const itemSchema = {
+  name: String,
+};
+
+Creates a new schema which is like a document that specifies strict fields, which can be String, int, Date etc.
+```
+
+```sh
+const Item = mongoose.model("Item", itemSchema);
+
+const item1 = new Item({
+  name: "I will wash plates",
+});
+
+const item2 = new Item({
+  name: "I will feed the dogs",
+});
+
+const item3 = new Item({
+  name: "I will code for some hours",
+});
+
+the mongoose.model provides an interface to the database for creating, querying, updating, deleting records, unlike Schema that provides the structure as a whole
+
+While, item1, item2 and item3 are creted as fields that have met the criteria in the Schema, to have one field with the datatype of String
+
+```
+
+```sh
+
 ```
