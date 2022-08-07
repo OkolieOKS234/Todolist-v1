@@ -1,3 +1,7 @@
+## UI OF THE PROJECT
+
+![UI of the project](./images/ejs.PNG)
+
 ```sh
 
 
