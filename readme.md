@@ -2,6 +2,13 @@
 
 ![UI of the project](./images/ejs.PNG)
 
+
+## VIDEO OF HOW IT WORKS..SIMPLE AND COOL
+https://user-images.githubusercontent.com/98519572/183304286-21773154-f3c0-424c-bf25-ea20d5ebc27f.mp4
+
+
+
+
 ```sh
 
 
