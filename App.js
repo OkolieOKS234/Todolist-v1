@@ -63,23 +63,24 @@ app.get("/:customListName", (req, res) => {
   const customListName = req.params.customListName;
 
   // Creating a new customlist, getting a document
-  List.find({ customListName }, function (err, foundList) {
+  List.findOne({ name: customListName }, function (err, foundList) {
     if (!err) {
-      if (foundList) {
-        //new list
+      if (!foundList) {
+        //Create a new list
         const list = new List({
           name: customListName,
-          items: defaultArray,
+          items: defaultItems,
         });
         list.save();
+        res.redirect("/" + customListName);
+      } else {
+        //Show an existing list
+
+        res.render("list", {
+          listTitle: foundList.name,
+          newListItems: foundList.items,
+        });
       }
-    } else {
-      //show an existing list
-      res.render("list", {
-        listTitle: foundList.name,
-        newListItems: foundList.items,
-      });
-      res.redirect("");
     }
   });
 });
@@ -88,25 +89,41 @@ app.get("/:customListName", (req, res) => {
 
 app.post("/", (req, res) => {
   const newItemName = req.body.newItem;
-
+  const listName = req.body.list;
   // Creating a  new Schema so we can save to our mongodb
   const item = new Item({
     name: newItemName,
   });
-  item.save();
-  res.redirect("/");
+  // Check the list that was saved
+  // if it is our default list then save in home route
+  if (listName === "Today") {
+    item.save();
+    res.redirect("/");
+  }
+  // if it isn't find the particular list where condition is listName
+  // then push items
+  else {
+    List.findOne({ name: listName }, function (err, foundList) {
+      foundList.items.push(item);
+      foundList.save();
+      res.redirect("/" + listName);
+    });
+  }
 });
 app.post("/delete", (req, res) => {
   const checkbox = req.body.checkbox;
-
-  Item.findByIdAndRemove(checkbox, function (err) {
-    if (err) {
-      console.log("It was a failure");
-    } else {
-      console.log("It was a success");
-      res.redirect("/");
-    }
-  });
+  const listName = req.body.listName;
+  if (listName == "Today") {
+    Item.findByIdAndRemove(checkbox, function (err) {
+      if (err) {
+        console.log("Sucess");
+        res.redirect("/");
+      }
+    });
+  } 
+  else {
+    console.log("It was a success");
+  }
 });
 
 // Another route rendering
