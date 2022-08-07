@@ -33,6 +33,12 @@ const item3 = new Item({
 });
 const defaultArray = [item1, item2, item3];
 
+const listSchema = {
+  name: String,
+  items: [itemSchema],
+};
+const List = mongoose.model("List", listSchema);
+
 app.get("/", (req, res) => {
   // find the items
 
@@ -52,6 +58,30 @@ app.get("/", (req, res) => {
     }
   });
 });
+// route params
+app.get("/:customListName", (req, res) => {
+  const customListName = req.params.customListName;
+
+  // Creating a new customlist, getting a document
+  List.find({ customListName }, function (err, foundList) {
+    if (!err) {
+      if (foundList) {
+        //new list
+        const list = new List({
+          name: customListName,
+          items: defaultArray,
+        });
+        list.save();
+      }
+    } else {
+      //show an existing list
+      res.render("list", {
+        listTitle: foundList.name,
+        newListItems: foundList.items,
+      });
+    }
+  });
+});
 
 // render to list.ejs
 
@@ -65,15 +95,20 @@ app.post("/", (req, res) => {
   item.save();
   res.redirect("/");
 });
+app.post("/delete", (req, res) => {
+  const checkbox = req.body.checkbox;
+
+  Item.findByIdAndRemove(checkbox, function (err) {
+    if (err) {
+      console.log("It was a failure");
+    } else {
+      console.log("It was a success");
+      res.redirect("/");
+    }
+  });
+});
 
 // Another route rendering
-app.get("/about", (req, res) => {
-  res.render("about");
-});
-
-app.get("/work", function (req, res) {
-  res.render("list", { listTitle: "work List", newListItems: workitems });
-});
 
 // End of route rendering
 
