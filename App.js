@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 
 const mongoose = require("mongoose");
+const _ = require("lodash");
 
 const app = express();
 
@@ -60,7 +61,7 @@ app.get("/", (req, res) => {
 });
 // route params
 app.get("/:customListName", (req, res) => {
-  const customListName = req.params.customListName;
+  const customListName = _.capitalize(req.params.customListName);
 
   // Creating a new customlist, getting a document
   List.findOne({ name: customListName }, function (err, foundList) {
@@ -110,7 +111,10 @@ app.post("/", (req, res) => {
     });
   }
 });
+
+// To delete an item
 app.post("/delete", (req, res) => {
+  // get the form which has an action of /delete
   const checkbox = req.body.checkbox;
   const listName = req.body.listName;
   if (listName == "Today") {
@@ -120,9 +124,18 @@ app.post("/delete", (req, res) => {
         res.redirect("/");
       }
     });
-  } 
-  else {
-    console.log("It was a success");
+  } else {
+    // Help us find a field in an array in mongoose
+    List.findOneAndUpdate(
+      { name: listName },
+      { $pull: { items: { _id: checkbox } } },
+      (err, results) => {
+        if (!err) {
+          console.log(results);
+          res.redirect("/" + listName);
+        }
+      }
+    );
   }
 });
 
