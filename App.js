@@ -70,7 +70,7 @@ app.get("/:customListName", (req, res) => {
         //Create a new list
         const list = new List({
           name: customListName,
-          items: defaultItems,
+          items: defaultArray,
         });
         list.save();
         res.redirect("/" + customListName);
